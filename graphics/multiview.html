@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <style>
+            html, body {
+                height: 1080px;
+                width: 1920px;
+                background: transparent;
+            }
+
+            * {
+                padding: 0;
+                margin: 0;
+            }
+
+            :root {
+                --border-color: rgba(0, 0, 0, 0.5);
+                --border-preview-color: #05f405;
+                --border-program-color: #de1721;
+                --label-color: rgba(66, 66, 66, 0.4);
+            }
+
+            div:not(.label) {
+                border: 1px solid var(--border-color);
+                position: absolute;
+                display: flex;
+                flex-direction: column;
+                border: 2px solid transparent;
+            }
+
+            div.preview {
+                border: 2px solid var(--border-preview-color);
+            }
+
+            div.program {
+                border: 2px solid var(--border-program-color);
+            }
+
+            #preview {
+                top: 0;
+                left: 0;
+                right: 960px;
+                bottom: 540px;
+            }
+
+            #program {
+                top: 0;
+                left: 960px;
+                right: 0;
+                bottom: 540px;
+            }
+
+            #input1 {
+                top: 540px;
+                left: 0;
+                right: 1440px;
+                bottom: 270px;
+            }
+
+            #input2 {
+                top: 540px;
+                left: 480px;
+                right: 960px;
+                bottom: 270px;
+            }
+
+            #input3 {
+                top: 540px;
+                left: 960px;
+                right: 480px;
+                bottom: 270px;
+            }
+
+            #input4 {
+                top: 540px;
+                left: 1440px;
+                right: 0;
+                bottom: 270px;
+            }
+
+
+
+            #input5 {
+                top: 810px;
+                left: 0;
+                right: 1440px;
+                bottom: 0;
+            }
+
+            #input6 {
+                top: 810px;
+                left: 480px;
+                right: 960px;
+                bottom: 0;
+            }
+
+            #input7 {
+                top: 810px;
+                left: 960px;
+                right: 480px;
+                bottom: 0;
+            }
+
+            #input8 {
+                top: 810px;
+                left: 1440px;
+                right: 0;
+                bottom: 0;
+            }
+
+            .label {
+                margin: auto auto 2%;
+                background: var(--label-color);
+                color: #fff;
+                text-align: center;
+                font-family: Arial;
+                font-size: 28px;
+                padding: 5px 15px;
+                border-radius: 7px;
+            }
+
+            #preview .label, #program .label {
+                padding: 7px 20px;
+                font-size: 38px;
+            }
+
+            #preview .label, #program .label {
+                visibility: hidden;
+            }
+
+            #preview.visible .label, #program.visible .label {
+                visibility: visible;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="preview"><div class="label">Preview</div></div>
+        <div id="program"><div class="label">Program</div></div>
+
+        <div id="input1"><div class="label">Netzkamera</div></div>
+        <div id="input2" class="program"><div class="label">Schwenk</div></div>
+        <div id="input3"><div class="label">Mobil</div></div>
+        <div id="input4"><div class="label"></div></div>
+        
+        <div id="input5" class="preview"><div class="label"></div></div>
+        <div id="input6"><div class="label"></div></div>
+        <div id="input7"><div class="label"></div></div>
+        <div id="input8"><div class="label"></div></div>
+
+        <script>
+            const preview = document.querySelector('#preview');
+            const program = document.querySelector('#program');
+
+            const inputs = [
+                document.querySelector('#input1'),
+                document.querySelector('#input2'),
+                document.querySelector('#input3'),
+                document.querySelector('#input4'),
+                document.querySelector('#input5'),
+                document.querySelector('#input6'),
+                document.querySelector('#input7'),
+                document.querySelector('#input8')
+            ];
+
+            const inputLabels = inputs.map(input => input.querySelector('.label'));
+
+            const tallyReplicant = nodecg.Replicant('tally');
+            const inputsReplicant = nodecg.Replicant('inputs');
+            const configReplicant = nodecg.Replicant('config');
+
+            tallyReplicant.on('change', ({program, preview}) => {
+                inputs.forEach((input, i) => {
+                    if (i+1 == program) {
+                        input.classList.add('program');
+                    } else {
+                        input.classList.remove('program');
+                    }
+
+                    if (i+1 == preview) {
+                        input.classList.add('preview');
+                    } else {
+                        input.classList.remove('preview');
+                    }
+                })
+            });
+
+            inputsReplicant.on('change', inputs => {
+                inputLabels.forEach((label, i) => {
+                    const input = inputs[i];
+
+                    if (!input) {
+                        return;
+                    }
+
+                    label.innerText = input.title;
+                });
+            });
+
+            configReplicant.on('change', config => {
+                if (config.showPreviewLabel) {
+                    preview.classList.add('visible');
+                } else {
+                    preview.classList.remove('visible');
+                }
+                
+                if (config.showProgramLabel) {
+                    program.classList.add('visible');
+                } else {
+                    program.classList.remove('visible');
+                }
+            });
+        </script>
+    </body>
+</html>

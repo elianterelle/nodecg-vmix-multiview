@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            body {
+                background: #121212;
+                color: #fff;
+            }
+
+            button {
+                color: #fff;
+                background: #272727;
+                border: 0;
+            }
+
+            button:active {
+                background: #303030;
+            }
+
+            button:focus {
+                outline: none;
+            }
+
+            input {
+                border-color: #303030;
+                background: #272727;
+                color: #fff;
+            }
+
+            input.input {
+                display: block;
+                height: 50px;
+                width: 60px;
+                text-align: center;
+                font-size: 20px;
+                margin: 10px;
+            }
+
+            .row {
+                display: flex;
+                justify-content: space-around;
+            }
+
+            button {
+                padding: 5px;
+                width: 100%;
+                margin-top: 10px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="row">
+            <input type="number" class="input">
+            <input type="number" class="input">
+            <input type="number" class="input">
+            <input type="number" class="input">
+        </div>
+
+        <div class="row">
+            <input type="number" class="input">
+            <input type="number" class="input">
+            <input type="number" class="input">
+            <input type="number" class="input">
+        </div>
+
+        <div class="row">
+            <label>Preview Label <input type="checkbox" id="showPreviewLabel"></label>
+            <label>Program Label <input type="checkbox" id="showProgramLabel"></label>
+        </div>
+
+        <button onclick="save()">Save</button>
+
+        <script>
+            const configReplicant = nodecg.Replicant('config');
+
+            const inputs = Array.prototype.slice.call(document.querySelectorAll('.input'));
+            const showPreviewLabel = document.querySelector('#showPreviewLabel');
+            const showProgramLabel = document.querySelector('#showProgramLabel');
+
+            configReplicant.on('change', config => {
+                config.inputs.forEach((value, i) => {
+                    inputs[i].value = value;
+                });
+
+                showPreviewLabel.checked = config.showPreviewLabel;
+                showProgramLabel.checked = config.showProgramLabel;
+            })
+
+            function save() {
+                configReplicant.value = {
+                    inputs: inputs.map(input => parseInt(input.value)),
+                    showPreviewLabel: showPreviewLabel.checked,
+                    showProgramLabel: showProgramLabel.checked
+                };
+            }
+        </script>
+    </body>
+</html>
